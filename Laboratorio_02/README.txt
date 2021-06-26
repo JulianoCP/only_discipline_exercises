@@ -1,5 +1,5 @@
 
-<>COMO EXECUTAR<>.
+<>COMO EXECUTAR<>
 
 ---------------------------------------------------------------
 Programa: hierarquia.c
