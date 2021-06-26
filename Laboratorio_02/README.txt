@@ -18,5 +18,10 @@ Exemplo:
     Verificar cos comandos com:
             > ls /bin/
 ---------------------------------------------------------------
+Programa: busca.c
+Compilar: gcc busca.c -o busca
+Executar: ./busca <NUM_FILHOS> <VALOR_BUSCA> <STRING_VETOR>
+Exemplo:  ./busca 3 10 "1 2 3 4 5 6 7 8 9 10 11 12 13"
+---------------------------------------------------------------
 
 
