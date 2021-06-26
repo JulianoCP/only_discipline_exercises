@@ -1,4 +1,4 @@
-
+# Como executar.
 Programa: hierarquia.c
 Compilar: gcc hierarquia.c -o hierarquia
 Executar: ./hierarquia <NUMERO>
