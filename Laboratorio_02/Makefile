@@ -25,8 +25,8 @@ shell: shell.c
 	@echo "Compilando o arquivo $<"
 	@$(CC) $< -o $@
 
-	@echo "Executando o arquivo ./$@ ls -ilha /home/"
-	@./$@ ls -ilha /home/
+	@echo "Executando o arquivo ./$@"
+	@./$@ 
 
 clear: 
 	@echo "Excluindo binarios"

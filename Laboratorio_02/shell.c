@@ -1,7 +1,7 @@
 /*
  *  Autor:              Juliano Cesar Petini & Michel Gomes de Souza
- *  Data de criação:    25/06/2021
- *  Descrição:          Fazer um processo filho executar um comando, o processo pai deve aguardar o término da execução do comando.    
+ *  Data de criação:    28/06/2021
+ *  Descrição:          Shell simples que fornece um prompt ao usuário para executar comandos do shell do sistema. Se o comando for executado em segundo plano (&), a interface deve possibilitar a execução de outros comandos. Caso contrário, a interface deve esperar o retorno do comando e, em seguida, exibir o prompt novamente.
  *
  */
 
@@ -32,7 +32,6 @@ int executa(char* comando[], int tam){
         
         int i = 2;
         for(; i < tam; i++ ){
-            //printf("%s", comando[i]);
             parametros[i-1] = comando[i] ;
         }   
         parametros[i-1] = NULL;
@@ -48,6 +47,7 @@ int executa(char* comando[], int tam){
 /*
  *  Descrição:  
  *              Cria um processo filho que chama a função executa();
+ *              Se existir o caractere '&' ele irá voltar automaticamente para o prompt.
  *  Parâmetros:  
  *              comando: lista de parametros
  *              tam: tamanho da lista de parametros
@@ -71,52 +71,46 @@ int criaFork(char* comando[], int tam){
 
 /*
  *  Descrição:  
- *              Chama a função criaFork();
- *              passando a lista de parametros e o tamanho dos argumentos.
- *  Parâmetros:  
- *              argc : quantidade de pamatros passado para a main pelo terminal;
- *              argv : os respectivos parametros;
+ *              Faz um Split do que é digitado em fgets na str1 e chama a função criaFork(), passando a lista de parametros e o tamanho dos argumentos.
+ *  Parâmetros: sem parâmetros
  *  Saída:
  *              Retorna 0: Finalizado com sucesso.
  *
  */
-int main(int argc, char *argv[]){
+int main(){
+    printf("\nOs comandos aceitos é relativos aos existentes na pasta /bin/ \n\n");
     while(1){ 
         char str1[100];
-        char newString[10][10]; 
+        char novoComando[10][10]; 
         int i,j,ctr;
      
         printf("> ");
         fgets(str1, sizeof str1, stdin);    
      
-
-        /*
-         * Dar creditos
-         */
         j=0; ctr=0;
         for(i=0;i<=(strlen(str1));i++)
         {
             if(str1[i]==' '||str1[i]=='\0')
             {
-                newString[ctr][j]='\0';
-                ctr++;  //for next word
-                j=0;    //for next word, init index to 0
+                novoComando[ctr][j]='\0';
+                ctr++; 
+                j=0;
             }
             else
             {
                 if (str1[i]=='\n'){
                     continue;
                 }else{
-                    newString[ctr][j]=str1[i];
+                    novoComando[ctr][j]=str1[i];
                     j++;
                 }
             }
         }
 
         char** cd = malloc(sizeof(char**));
-        cd[0] = strdup(newString[0]);
+        cd[0] = strdup(novoComando[0]);
         for(int i =0; i <= ctr; i++){
-            cd[i+1] = strdup(newString[i]);
+            cd[i+1] = strdup(novoComando[i]);
         }
         criaFork(cd, ctr+1);
     }

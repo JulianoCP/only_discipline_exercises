@@ -30,6 +30,18 @@ Executar: ./busca <NUM_FILHOS> <VALOR_BUSCA> <STRING_VETOR>
 Exemplo:  ./busca 3 10 "1 2 3 4 5 6 7 8 9 10 11 12 13"
 
 MAKE: make busca
+
 ---------------------------------------------------------------
+Programa: shell.c
+Compilar: gcc shell.c -o shell
+Executar: ./shell
+Exemplo:  ./shell 
+        > ls
+        > ls /home/
+        > ls &
+        >
+MAKE: make shell
+---------------------------------------------------------------
+
 
 
