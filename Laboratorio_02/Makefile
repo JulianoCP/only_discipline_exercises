@@ -21,7 +21,14 @@ protoshell: protoShell.c
 	@echo "Executando o arquivo ./$@ ls -ilha /home/"
 	@./$@ ls -ilha /home/
 
+shell: shell.c
+	@echo "Compilando o arquivo $<"
+	@$(CC) $< -o $@
+
+	@echo "Executando o arquivo ./$@ ls -ilha /home/"
+	@./$@ ls -ilha /home/
+
 clear: 
 	@echo "Excluindo binarios"
-	@rm busca hierarquia protoshell
+	@rm busca hierarquia protoshell shell
 

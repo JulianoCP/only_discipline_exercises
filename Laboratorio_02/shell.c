@@ -32,7 +32,7 @@ int executa(char* comando[], int tam){
         
         int i = 2;
         for(; i < tam; i++ ){
-            printf("%s", comando[i]);
+            //printf("%s", comando[i]);
             parametros[i-1] = comando[i] ;
         }   
         parametros[i-1] = NULL;
@@ -53,15 +53,22 @@ int executa(char* comando[], int tam){
  *              tam: tamanho da lista de parametros
  */
 int criaFork(char* comando[], int tam){
+    char ecomer = comando[tam-1][0];
     pid_t pid= fork();
-
+    
     if (!pid){
-        executa(comando,tam);
+        if (ecomer == '&'){
+            executa(comando,tam-1);
+        }else{
+            executa(comando,tam);
+        }
     }else{
-        wait(NULL);
-        printf("\n\nComando Finalizado\n\n");
+        if(ecomer != '&'){
+            wait(NULL);
+        }
     }
 }
+
 /*
  *  Descrição:  
  *              Chama a função criaFork();
@@ -74,6 +81,44 @@ int criaFork(char* comando[], int tam){
  *
  */
 int main(int argc, char *argv[]){
-   criaFork(argv, argc);
-   return 0;
+    while(1){ 
+        char str1[100];
+        char newString[10][10]; 
+        int i,j,ctr;
+     
+        printf("> ");
+        fgets(str1, sizeof str1, stdin);    
+     
+
+        /*
+         * Dar creditos
+         */
+        j=0; ctr=0;
+        for(i=0;i<=(strlen(str1));i++)
+        {
+            if(str1[i]==' '||str1[i]=='\0')
+            {
+                newString[ctr][j]='\0';
+                ctr++;  //for next word
+                j=0;    //for next word, init index to 0
+            }
+            else
+            {
+                if (str1[i]=='\n'){
+                    continue;
+                }else{
+                    newString[ctr][j]=str1[i];
+                    j++;
+                }
+            }
+        }
+
+        char** cd = malloc(sizeof(char**));
+        cd[0] = strdup(newString[0]);
+        for(int i =0; i <= ctr; i++){
+            cd[i+1] = strdup(newString[i]);
+        }
+        criaFork(cd, ctr+1);
+    }
+    return 0;
 }
