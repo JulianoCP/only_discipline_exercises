@@ -9,4 +9,11 @@ Exemplo: ./thread_find 3 5
 
 MAKE: make thread_find
 ---------------------------------------------------------------
+Programa: repetido.c
+Compilar: gcc repetido.c -o repeat
+Executar: ./repeat 
+Exemplo: ./repeat
+
+MAKE: make repeat
+---------------------------------------------------------------
 

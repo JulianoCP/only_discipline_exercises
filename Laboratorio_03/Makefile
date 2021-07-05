@@ -8,8 +8,15 @@ thread_find: threadFind.c
 	@echo "Executando o arquivo ./$@ 5 15 "
 	@./$@ 5 15
 
+repeat: repetido.c 
+	@echo "Compilando o arquivo $<"
+	@$(CC) $< -o $@ $(FLAGS)
+	
+	@echo "Executando o arquivo ./$@"
+	@./$@
+	
 
 clear: 
 	@echo "Excluindo binarios"
-	@rm thread_find
+	@rm thread_find repeat
 
