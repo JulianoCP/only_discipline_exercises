@@ -19,7 +19,7 @@ multi: matriz.c multi.c
 	@echo "Compilando o arquivo $<"
 	@$(CC) -c -o matriz.o matriz.c -I.
 	@$(CC) -c -o multi.o multi.c -I. 
-	@$(CC) -o multi matriz.o multi.o $(FLAGS)
+	@$(CC) -o multi matriz.o multi.o $(FLAGS) -lm
 
 	@echo "Executando o arquivo ./$@"
 	@./$@

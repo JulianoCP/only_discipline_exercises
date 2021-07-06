@@ -13,6 +13,7 @@
 #include <string.h>
 #include <math.h>
 #include "matriz.h"
+#include <time.h>
 
 int **matrix;
 int r = 5, c = 5;
@@ -73,6 +74,18 @@ void *thread_median(void *param){
     }
 
 }
+
+ /*
+ *  Descrição:  
+ *              Função para contar os milissegundos;
+ */
+
+long long millis(){
+    struct timespec _t;
+    clock_gettime(CLOCK_REALTIME, &_t);
+    return _t.tv_sec*1000 + lround(_t.tv_nsec/1.0e6);
+}
+
 /*
  *  Descrição:  
  *              Inicia todos os parametros, cria e inicializa as threads.
@@ -103,6 +116,8 @@ int main(int argc, char* argv[]){
         matrix = read_matrix_from_file("matrizNova.in", &r, &c);
     }
    
+    long long time1 = millis();
+
     printf("\nNumero de Threads: %d", N);
     printf("\nMatriz [%d]x[%d] \n\n", r, c);
 
@@ -172,6 +187,9 @@ int main(int argc, char* argv[]){
     for (int p=0; p < N; p++) 
         pthread_join(t[p], NULL);
 
+    
+    long long time2 = millis();
+
     printf("\nMediana: ");
     for(int i=0; i<r;i++) printf(" [%d]", nn[i]);
     printf("\n");
@@ -223,5 +241,9 @@ int main(int argc, char* argv[]){
         printf("\nArquivos gravados com sucesso!\nArquivos Gerados: matrizNova.in, results.txt\n ");
     }
 
+    
+    
+    printf("\nTempo de Execução %lld/Ms\n\n", time2-time1);
+    
     pthread_exit(NULL);
 }

@@ -20,7 +20,7 @@ Programa: multi.c
 Compilar: 
         gcc -c -o matriz.o matriz.c -I
         gcc -c -o multi.o multi.c -I
-        gcc -o multi matriz.o multi.o -lpthread
+        gcc -o multi matriz.o multi.o -lpthread -lm
 Executar: ./multi <NUMERO_DE_THREADS>
 Exemplo: ./multi 8
 
