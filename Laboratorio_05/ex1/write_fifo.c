@@ -4,8 +4,6 @@
  *  Descrição:           
  *                  Faça um programa que lê uma expressão matemática simples (+, -, *, /) e passe para outro programa 
  *                  que realiza o cálculo e devolve a resposta.
- *
- *
  */
 
 #include <stdio.h>
@@ -28,7 +26,6 @@ char buf [512];
  *              Inicia todos os parametros, abre o FIFO para enviar e receber informações.
  *              Recebe via argumentos a equação a ser enviada e resolvida pelo read FIFO,
  *              Ao receber o resultado da equação atraves do FIFO é mostrado atraves de um printf na tela.
- *
  */
 
 int main (int argc, char **argv){
@@ -46,7 +43,6 @@ int main (int argc, char **argv){
         perror ("open: server fifo");
         return 1;
     }
-
         sprintf (buf, "%s", operacao);
         printf("Enviando: %s\n", buf);
 

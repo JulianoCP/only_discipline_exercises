@@ -4,8 +4,6 @@
  *  Descrição:           
  *                  Faça um programa que lê uma expressão matemática simples (+, -, *, /) e passe para outro programa 
  *                  que realiza o cálculo e devolve a resposta.
- *
- *
  */
 
 #include <stdio.h>
@@ -25,7 +23,6 @@
  *              Fica esperando a entrada do writer do FIFO,
  *              Depois pega a string e separa e executa a operação desejada,
  *              retornando o resultado atraves do FIFO
- *
  */
 
 
