@@ -9,6 +9,7 @@
  *                  índices no vetor).
  */
 
+#include <time.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -113,18 +114,19 @@ int main(){
 
             if ((memory_id_pai = shmget(key, SHMSZ, IPC_CREAT | 0666)) < 0) { perror("Erro ao tentar criar o segmento de shm."); exit(1); }
             if ((memory_pai = shmat(memory_id_pai, NULL, 0)) == (int*)-1) { perror("Erro ao acoplar o segmento ao espaço de dados do programa."); exit(1); }
-            printf("\nRegião de memoria: %d. \n\n", memory_id_pai);
+            printf("\nREGIÃO DE MEMÓRIA (%d)\n\n", memory_id_pai);
 
             share_pai = memory_pai;
 
-            for(index = MIN_RANGE; index < MAX_RANGE; index++) share_pai[index] = rand()%100 + 1;
+            srand((unsigned)time(NULL));
+            for(index = MIN_RANGE; index < MAX_RANGE; index++) share_pai[index] = rand()%90 + 10;
 
-            printf("Primeiro Vetor: ");
-            for(index = MIN_RANGE; index < MID_RANGE; index++) printf("%d ", share_pai[index]);
+            printf("-VETOR[1]: |");
+            for(index = MIN_RANGE; index < MID_RANGE; index++) printf("%d|", share_pai[index]);
             printf("\n");
 
-            printf("Segundo Vetor: ");
-            for(index = MID_RANGE; index < MAX_RANGE; index++) printf("%d ", share_pai[index]);
+            printf("-VETOR[2]: |");
+            for(index = MID_RANGE; index < MAX_RANGE; index++) printf("%d|", share_pai[index]);
             printf("\n\n");
 
             close(pipe_1[0]);
@@ -138,8 +140,8 @@ int main(){
             //Esperado os filhos.
             while ((memory_pai[MAX_RANGE + MID_RANGE] != -1) && (memory_pai[MAX_RANGE + MID_RANGE + 1] != -1)){ sleep(1); }
             
-            printf("Vetor Resultante:");
-            for (int j = MAX_RANGE; j < MAX_RANGE + MID_RANGE; j++) printf("%d ", memory_pai[j]);
+            printf("RESULTADO: |");
+            for (int j = MAX_RANGE; j < MAX_RANGE + MID_RANGE; j++) printf("%d|", memory_pai[j]);
             printf("\n\n");
 
             if (shmdt(memory_pai) == -1){ perror("Erro ao desacoplar da região de memória compartilhada."); exit(1); }
