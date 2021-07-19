@@ -3,7 +3,7 @@
  *    velha - Implementa o jogo da velha
  *
  * Funcionalidades: 
- *    - inicializa um jogo sem nenhuma marcação
+ *    - inicializa um jogo sem nenhuma marcaï¿½ï¿½o
  *    - desenha a velha
  *    - seta as jogadas
  *    - verifica ganhador ou empate 
@@ -12,13 +12,15 @@
  * Sintaxe:  velha 
  *
  * Notas:     
- *    - apesar de possuir um main, suas funções podem ser invocadas 
+ *    - apesar de possuir um main, suas funï¿½ï¿½es podem ser invocadas 
  *------------------------------------------------------------------------
  */
 
 
 #include <stdio.h>
 #include "velha.h"
+#include <string.h>
+#include <stdlib.h>
 
 void inicio_velha () {
     memset(&velha,' ',sizeof(velha)); 
@@ -52,7 +54,7 @@ char verifica_ganhador () {
     /* retorna 0 para empate */
     if (contador == 9) return 0;
     
-    /* retorna 32 (espaço) para jogo indefinido */
+    /* retorna 32 (espaï¿½o) para jogo indefinido */
     return ' ';
 }
 
@@ -63,8 +65,7 @@ int marca_velha (int l, int c, char sinal) {
     return 1;
 }
 
-/*
-main (int argc, char *argv[]) {
+int main (int argc, char *argv[]) {
     int l, c;
     char vez='X';
     
@@ -75,10 +76,8 @@ main (int argc, char *argv[]) {
     while (1) {
 	
 	do {
-	   printf ("\nLinha: ");
-	   scanf("%i", &l);
-	   printf ("Coluna: ");
-	   scanf("%i", &c);
+	   printf ("\nLinha e Coluna [L C]: ");
+	   scanf("%i %i", &l, &c);
 	   printf ("\n");
 	} while (marca_velha(l,c,vez) != 1);
         
@@ -86,8 +85,8 @@ main (int argc, char *argv[]) {
 	
 	char resp = verifica_ganhador();
 	if (resp != ' ') { 
-	   if (resp == 0) printf ("\n\nEmpate!!!!!!!\n\n", resp);
-	   else printf ("\n\nGanhador é %c\n\n", resp);
+	   if (resp == 0) printf ("\n\nEmpate!!!!%c!!!\n\n", resp);
+	   else printf ("\n\nGanhador: %c\n\n", resp);
 	   exit(1);
 	} //if
 	
@@ -96,4 +95,4 @@ main (int argc, char *argv[]) {
 	i++;
     } //while
 } //main
-*/
+

@@ -20,7 +20,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-#define TAM_VET 10
+#define TAM_VET 20
 #define MIN_RANGE 0
 #define MID_RANGE TAM_VET
 #define MAX_RANGE (TAM_VET * 2)
@@ -28,9 +28,72 @@
 #define AMOUNT_CHILD 2
 #define SHMSZ (MAX_RANGE + MID_RANGE + AMOUNT_CHILD)
 
+int pid, pipe_1[2],pipe_2[2], buffer_1[3], buffer_2[3];
 key_t key = 5678;
 
-/*
+/*  Filho 1.
+ *  Descrição:  
+ *             Le o pipe e obtem o buffer com as posições que o filho deve somar.
+ *             Acessa a memoria compartilhada com o pai para utilizar o vetor.
+ *             Faz a soma de partes do vetor e ao final seta a flag de termino.
+ */
+int child_one(){
+    close(pipe_1[1]);
+    read(pipe_1[0], buffer_1, sizeof(buffer_1));
+
+    int memory_id_filho_1, *memory_filho_1, *share_filho_1;;
+
+    if ((memory_id_filho_1 = shmget(key, SHMSZ, 0666)) < 0){ perror("Erro ao tentar acessar o segmento do Filho 1."); exit(1); }
+    if ((memory_filho_1 = shmat(memory_id_filho_1, NULL, 0)) == (int*)-1){ perror("Erro ao acoplar o segmento ao espaço de dados do programa."); exit(1); }
+
+    share_filho_1 = memory_filho_1;
+    int index_vetor_1 = buffer_1[0], index_vetor_2 = buffer_1[1], index_vetor_resultado = buffer_1[2];
+
+    //Soma vet_result[n] = vetor_1[n] + vetor_2[n].
+    while(index_vetor_1 < buffer_1[0] + INTERVALO) {
+        memory_filho_1[index_vetor_resultado] = share_filho_1[index_vetor_1] + share_filho_1[index_vetor_2];
+        index_vetor_1++; index_vetor_2++; index_vetor_resultado++;
+    }
+
+    //Setando flag, que identifica a finalização do filho 1. 
+    memory_filho_1[MAX_RANGE+MID_RANGE] = -1;
+    if (shmdt(memory_filho_1) == -1){ perror("Erro ao desacoplar da região de memória compartilhada."); exit(1); }
+    fflush(stdout);
+    return EXIT_SUCCESS;
+}
+
+/*  Filho 2.
+ *  Descrição:  
+ *             Le o pipe e obtem o buffer com as posições que o filho deve somar.
+ *             Acessa a memoria compartilhada com o pai para utilizar o vetor.
+ *             Faz a soma de partes do vetor e ao final seta a flag de termino.
+ */
+int child_two(){
+    close(pipe_2[1]);
+    read(pipe_2[0], buffer_2, sizeof(buffer_2));
+
+    int memory_id_filho_2, *memory_filho_2, *share_filho_2;;
+
+    if ((memory_id_filho_2 = shmget(key, SHMSZ, 0666)) < 0){ perror("Erro ao tentar acessar o segmento do Filho 2."); exit(1); }
+    if ((memory_filho_2 = shmat(memory_id_filho_2, NULL, 0)) == (int*)-1){ perror("Erro ao acoplar o segmento ao espaço de dados do programa."); exit(1); }
+
+    share_filho_2 = memory_filho_2;
+    int index_vetor_1 = buffer_2[0], index_vetor_2 = buffer_2[1], index_vetor_resultado = buffer_2[2];
+
+    //Soma vet_result[n] = vetor_1[n] + vetor_2[n].
+    while(index_vetor_1 < buffer_2[0] + INTERVALO) {
+        memory_filho_2[index_vetor_resultado] = share_filho_2[index_vetor_1] + share_filho_2[index_vetor_2];
+        index_vetor_1++; index_vetor_2++; index_vetor_resultado++;
+    }
+
+    //Setando flag, que identifica a finalização do filho 2. 
+    memory_filho_2[MAX_RANGE+MID_RANGE+1] = -1;
+    if (shmdt(memory_filho_2) == -1){ perror("Erro ao desacoplar da região de memória compartilhada."); exit(1); }
+    fflush(stdout);
+    return EXIT_SUCCESS;
+}
+
+/*  Pai.
  *  Descrição:  
  *              Cria dois canais de comunicação Pipe.
  *              Cria dois filhos.
@@ -39,7 +102,7 @@ key_t key = 5678;
  */
 int main(){
 	//Cria os pipes.
-	int pid, pipe_1[2],pipe_2[2], buffer_1[3], buffer_2[3];
+	//int pid, pipe_1[2],pipe_2[2], buffer_1[3], buffer_2[3];
 	if (pipe(pipe_1) || pipe(pipe_2)){ fprintf(stderr, "Falha ao criar o Pipe\n"); return EXIT_FAILURE; }
 
     //Cria os filhos e as regiões de memoria compartilhada.
@@ -54,13 +117,13 @@ int main(){
 
             share_pai = memory_pai;
 
-            for(index = MIN_RANGE; index < MAX_RANGE; index++) share_pai[index] = rand()%10 + 1;
+            for(index = MIN_RANGE; index < MAX_RANGE; index++) share_pai[index] = rand()%100 + 1;
 
-            printf("Primeiro Vetor:");
+            printf("Primeiro Vetor: ");
             for(index = MIN_RANGE; index < MID_RANGE; index++) printf("%d ", share_pai[index]);
             printf("\n");
 
-            printf("Segundo Vetor:");
+            printf("Segundo Vetor: ");
             for(index = MID_RANGE; index < MAX_RANGE; index++) printf("%d ", share_pai[index]);
             printf("\n\n");
 
@@ -86,53 +149,11 @@ int main(){
             return EXIT_SUCCESS;
 
         } else {
-            //FILHO 2.
-            close(pipe_2[1]);
-            read(pipe_2[0], buffer_2, sizeof(buffer_2));
-
-            int memory_id_filho_2, *memory_filho_2, *share_filho_2;;
-
-            if ((memory_id_filho_2 = shmget(key, SHMSZ, 0666)) < 0){ perror("Erro ao tentar acessar o segmento do Filho 2."); exit(1); }
-            if ((memory_filho_2 = shmat(memory_id_filho_2, NULL, 0)) == (int*)-1){ perror("Erro ao acoplar o segmento ao espaço de dados do programa."); exit(1); }
-
-            share_filho_2 = memory_filho_2;
-            int index_vetor_1 = buffer_2[0], index_vetor_2 = buffer_2[1], index_vetor_resultado = buffer_2[2];
-
-            //Soma vet_result[n] = vetor_1[n] + vetor_2[n].
-            while(index_vetor_1 < buffer_2[0] + INTERVALO) {
-                memory_filho_2[index_vetor_resultado] = share_filho_2[index_vetor_1] + share_filho_2[index_vetor_2];
-                index_vetor_1++; index_vetor_2++; index_vetor_resultado++;
-            }
-
-            //Setando flag, que identifica a finalização do filho 2. 
-            memory_filho_2[MAX_RANGE+MID_RANGE+1] = -1;
-            if (shmdt(memory_filho_2) == -1){ perror("Erro ao desacoplar da região de memória compartilhada."); exit(1); }
-            fflush(stdout);
-            return EXIT_SUCCESS;
+            //CHAMA O FILHO 2.
+            child_two();
         }
     } else {
-        //FILHO 1.
-        close(pipe_1[1]);
-        read(pipe_1[0], buffer_1, sizeof(buffer_1));
-    
-        int memory_id_filho_1, *memory_filho_1, *share_filho_1;;
-
-        if ((memory_id_filho_1 = shmget(key, SHMSZ, 0666)) < 0){ perror("Erro ao tentar acessar o segmento do Filho 1."); exit(1); }
-        if ((memory_filho_1 = shmat(memory_id_filho_1, NULL, 0)) == (int*)-1){ perror("Erro ao acoplar o segmento ao espaço de dados do programa."); exit(1); }
-
-        share_filho_1 = memory_filho_1;
-        int index_vetor_1 = buffer_1[0], index_vetor_2 = buffer_1[1], index_vetor_resultado = buffer_1[2];
-
-        //Soma vet_result[n] = vetor_1[n] + vetor_2[n].
-        while(index_vetor_1 < buffer_1[0] + INTERVALO) {
-            memory_filho_1[index_vetor_resultado] = share_filho_1[index_vetor_1] + share_filho_1[index_vetor_2];
-            index_vetor_1++; index_vetor_2++; index_vetor_resultado++;
-        }
-
-        //Setando flag, que identifica a finalização do filho 1. 
-        memory_filho_1[MAX_RANGE+MID_RANGE] = -1;
-        if (shmdt(memory_filho_1) == -1){ perror("Erro ao desacoplar da região de memória compartilhada."); exit(1); }
-        fflush(stdout);
-        return EXIT_SUCCESS;
+        //CHAMA O FILHO 1.
+        child_one();
     }
 }
