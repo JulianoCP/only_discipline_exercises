@@ -1,14 +1,13 @@
 CC=gcc -Wall
 
-PROGS=main
+PROGS=server
 
 all: $(PROGS)
 
 clean:
 	rm -f $(PROGS)
 
-main: main.c
+server: server.c
 	$(CC) $< -o $@
-	@./$@
 	
 

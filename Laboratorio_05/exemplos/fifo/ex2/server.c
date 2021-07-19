@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 
          if (bytes_read > 0) {
              return_fifo = strtok (buf, ", \n");
-
+             printf("\n\n -->>>>>>>>%s", return_fifo);
              i = 0;
              numbers [i] = strtok (NULL, ", \n");
 

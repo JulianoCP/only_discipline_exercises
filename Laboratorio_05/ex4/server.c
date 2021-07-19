@@ -7,7 +7,6 @@
  *    - desenha a velha
  *    - seta as jogadas
  *    - verifica ganhador ou empate 
- *    
  *
  * Sintaxe:  velha 
  *
@@ -16,11 +15,22 @@
  *------------------------------------------------------------------------
  */
 
-
+#include <sys/types.h>              /* tipos b�sicos do GNU C */
+#include <sys/socket.h>             /* fun��es, tipos e constantes para sockets (UNIX) */
+#include <netinet/in.h>             /* fun��es, tipos e constantes para sockets (Internet) */
+#include <netdb.h>                  /* dados sobre a rede (ex.: hosts, protocolos, ...) */
+#include <unistd.h>                 /* close() */
 #include <stdio.h>
-#include "velha.h"
 #include <string.h>
 #include <stdlib.h>
+
+#define IP_SERVER     "127.0.0.1"   /* especifica o IP do servidor */
+#define PORTA_PADRAO  5000          /* especifica a porta padrao de conexao */
+#define MAX_CLIENT    10            /* maximo de conexoes */
+#define MAX_BUFFER    100           /* tamanho m�ximo do buffer */
+
+char velha[3][3];
+int contador;
 
 void inicio_velha () {
     memset(&velha,' ',sizeof(velha)); 
@@ -40,7 +50,7 @@ void desenha_velha () {
 char verifica_ganhador () {
     /* contabiliza o numero de lances */
     contador++;
-    
+
     int i;
     for (i=0; i<3; i++) {
         if ((velha[i][0] == velha[i][1]) && (velha[i][1] == velha[i][2])) return velha[i][1];
@@ -58,41 +68,20 @@ char verifica_ganhador () {
     return ' ';
 }
 
-
 int marca_velha (int l, int c, char sinal) {
     if (velha[l][c] != ' ') return -1;
     velha[l][c] = sinal;
     return 1;
 }
 
-int main (int argc, char *argv[]) {
-    int l, c;
-    char vez='X';
-    
-    inicio_velha();
-    desenha_velha();
-    
-    int i=0;
-    while (1) {
-	
-	do {
-	   printf ("\nLinha e Coluna [L C]: ");
-	   scanf("%i %i", &l, &c);
-	   printf ("\n");
-	} while (marca_velha(l,c,vez) != 1);
-        
-	desenha_velha();
-	
-	char resp = verifica_ganhador();
-	if (resp != ' ') { 
-	   if (resp == 0) printf ("\n\nEmpate!!!!%c!!!\n\n", resp);
-	   else printf ("\n\nGanhador: %c\n\n", resp);
-	   exit(1);
-	} //if
-	
-	if (i%2 == 0) vez = '0';
-	else vez = 'X';
-	i++;
-    } //while
-} //main
+int main(){
+    struct hostent *ptrh; /* ponteiro para a tabela de hosts */
+	struct sockaddr_in addr_server, /* estrutura para armazenar o IP e a porta do servidor */
+	addr_client; /* estrutura para armazenar o endereco do cliente */
+	int serverSocket, /* socket para ouvir conex�es */
+	playerSocket; /* socket para comunica��o com o jogador conectado */
+	int port; /* porta utilizada na comunica��o */
+	char buffer[MAX_BUFFER]; /* armazena os dados recebidos */
 
+    return 0;
+}
