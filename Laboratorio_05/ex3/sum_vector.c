@@ -20,13 +20,13 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-#define TAM_VET 20
+#define TAM_VET 10
 #define MIN_RANGE 0
 #define MID_RANGE TAM_VET
 #define MAX_RANGE (TAM_VET * 2)
 #define INTERVALO (TAM_VET / 2)
 #define AMOUNT_CHILD 2
-#define SHMSZ MAX_RANGE + MID_RANGE + AMOUNT_CHILD
+#define SHMSZ (MAX_RANGE + MID_RANGE + AMOUNT_CHILD)
 
 key_t key = 5678;
 
@@ -43,9 +43,9 @@ int main(){
 	if (pipe(pipe_1) || pipe(pipe_2)){ fprintf(stderr, "Falha ao criar o Pipe\n"); return EXIT_FAILURE; }
 
     //Cria os filhos e as regiões de memoria compartilhada.
-    if (pid == fork()) { 
+    if ((pid = fork())) { 
         //Pai.
-        if (pid == fork()) {
+        if ((pid = fork())) {
             int index, memory_id_pai, *memory_pai, *share_pai;
 
             if ((memory_id_pai = shmget(key, SHMSZ, IPC_CREAT | 0666)) < 0) { perror("Erro ao tentar criar o segmento de shm."); exit(1); }
@@ -72,8 +72,9 @@ int main(){
             buffer_2[0] = MIN_RANGE + INTERVALO; buffer_2[1] = MID_RANGE + INTERVALO; buffer_2[2] = MAX_RANGE + INTERVALO;
             write(pipe_2[1], buffer_2, sizeof(buffer_2));
 
-            while ((memory_pai[MAX_RANGE + MID_RANGE] != -1) && (memory_pai[MAX_RANGE + MID_RANGE + 1] != -1)) sleep(1);//Esperado os filhos.
-
+            //Esperado os filhos.
+            while ((memory_pai[MAX_RANGE + MID_RANGE] != -1) && (memory_pai[MAX_RANGE + MID_RANGE + 1] != -1)){ sleep(1); }
+            
             printf("Vetor Resultante:");
             for (int j = MAX_RANGE; j < MAX_RANGE + MID_RANGE; j++) printf("%d ", memory_pai[j]);
             printf("\n\n");
@@ -106,7 +107,8 @@ int main(){
             //Setando flag, que identifica a finalização do filho 2. 
             memory_filho_2[MAX_RANGE+MID_RANGE+1] = -1;
             if (shmdt(memory_filho_2) == -1){ perror("Erro ao desacoplar da região de memória compartilhada."); exit(1); }
-            return EXIT_SUCCESS;  
+            fflush(stdout);
+            return EXIT_SUCCESS;
         }
     } else {
         //FILHO 1.
@@ -130,6 +132,7 @@ int main(){
         //Setando flag, que identifica a finalização do filho 1. 
         memory_filho_1[MAX_RANGE+MID_RANGE] = -1;
         if (shmdt(memory_filho_1) == -1){ perror("Erro ao desacoplar da região de memória compartilhada."); exit(1); }
+        fflush(stdout);
         return EXIT_SUCCESS;
     }
 }
