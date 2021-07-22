@@ -1,34 +1,22 @@
-/*------------------------------------------------------------------------
- * Programa:
- *    velha - Implementa o jogo da velha
- *
- * Funcionalidades: 
- *    - inicializa um jogo sem nenhuma marca��o
- *    - desenha a velha
- *    - seta as jogadas
- *    - verifica ganhador ou empate 
- *
- * Sintaxe:  velha 
- *
- * Notas:     
- *    - apesar de possuir um main, suas fun��es podem ser invocadas 
- *------------------------------------------------------------------------
- */
-
-#include <sys/types.h>              /* tipos b�sicos do GNU C */
-#include <sys/socket.h>             /* fun��es, tipos e constantes para sockets (UNIX) */
-#include <netinet/in.h>             /* fun��es, tipos e constantes para sockets (Internet) */
-#include <netdb.h>                  /* dados sobre a rede (ex.: hosts, protocolos, ...) */
-#include <unistd.h>                 /* close() */
+#include <sys/socket.h>
+#include <arpa/inet.h> 
+#include <netinet/in.h> 
+#include <sys/types.h>             
+#include <netdb.h>                  
+#include <unistd.h>                 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-#define IP_SERVER     "127.0.0.1"   /* especifica o IP do servidor */
-#define PORTA_PADRAO  5000          /* especifica a porta padrao de conexao */
-#define MAX_CLIENT    10            /* maximo de conexoes */
-#define MAX_BUFFER    100           /* tamanho m�ximo do buffer */
+#define IP_SERVER     "127.0.0.1"   
+#define PORTA_PADRAO  5000          
+#define MAX_CLIENT    10            
+#define MAX_BUFFER    100          
 
+struct sockaddr_in serv; 
+int fd; 
+int conn; 
+char message[100] = ""; 
 char velha[3][3];
 int contador;
 
@@ -75,13 +63,15 @@ int marca_velha (int l, int c, char sinal) {
 }
 
 int main(){
-    struct hostent *ptrh; /* ponteiro para a tabela de hosts */
-	struct sockaddr_in addr_server, /* estrutura para armazenar o IP e a porta do servidor */
-	addr_client; /* estrutura para armazenar o endereco do cliente */
-	int serverSocket, /* socket para ouvir conex�es */
-	playerSocket; /* socket para comunica��o com o jogador conectado */
-	int port; /* porta utilizada na comunica��o */
-	char buffer[MAX_BUFFER]; /* armazena os dados recebidos */
-
-    return 0;
+	fd = socket(AF_INET, SOCK_STREAM, 0);
+	serv.sin_family = AF_INET;
+	serv.sin_port = htons(8096);
+	inet_pton(AF_INET, "127.0.0.1", &serv.sin_addr); //This binds the client to localhost
+	connect(fd, (struct sockaddr *)&serv, sizeof(serv)); //This connects the client to the server.
+	while(1) {
+		printf("Enter a message: ");
+		fgets(message, 100, stdin);
+		send(fd, message, strlen(message), 0);
+		//An extra breaking condition can be added here (to terminate the while loop)
+	}
 }
