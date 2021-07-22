@@ -52,15 +52,15 @@ int main(){
 		int pid = fork();
 		if(pid == 0) {
 			while (recv(conn, message, 100, 0) > 0) {
-				if (message[0] == 'q'){
+			/*	if (message[0] == 'q'){
 					//close(mypipe[1]);
 					int c;
 					stream = fdopen(mypipe[0], "r");
 					//while ((c = fgetc(stream)) != EOF)
 					printf("-->>%d",stream[0]);
 					//fclose(stream);
-				}
-				printf("Message Received: %s\n", message);
+				}*/
+				printf("Recebido: %s\n", message);
 				close(mypipe[0]);
 				stream = fdopen(mypipe[1], "w");
 				fprintf(stream, "%s",message);

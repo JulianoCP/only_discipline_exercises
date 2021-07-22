@@ -1,6 +1,6 @@
 CC=gcc -Wall
 
-PROGS=server
+PROGS=server client
 
 all: $(PROGS)
 
@@ -10,4 +10,6 @@ clean:
 server: server.c
 	$(CC) $< -o $@
 	
-
+client: client.c
+	$(CC) $< -o $@
+	
