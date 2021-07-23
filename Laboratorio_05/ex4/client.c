@@ -6,14 +6,8 @@
 #include <unistd.h>                 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <stdlib.h>     
 
-#define IP_SERVER     "127.0.0.1"   
-#define PORTA_PADRAO  5000          
-#define MAX_CLIENT    10            
-#define MAX_BUFFER    100          
-
-struct sockaddr_in serv; 
 int fd; 
 int conn; 
 char message[100] = ""; 
@@ -64,18 +58,27 @@ int marca_velha (int l, int c, char sinal) {
 
 int main(){
 	fd = socket(AF_INET, SOCK_STREAM, 0);
-	serv.sin_family = AF_INET;
+	
+    struct sockaddr_in serv; 
+	memset(&serv, '0', sizeof(serv)); 
+    memset(message, '0',sizeof(message));
+
+    serv.sin_family = AF_INET;
 	serv.sin_port = htons(8096);
 
 	inet_pton(AF_INET, "127.0.0.1", &serv.sin_addr); 
 	connect(fd, (struct sockaddr *)&serv, sizeof(serv));
+
 	while(1) {
 		printf("Enter a message: ");
+        bzero(message, strlen(message));
 		fgets(message, 100, stdin);
 		send(fd, message, strlen(message), 0);
-        memset(message, '\0', sizeof(message));
-        
-         //recv 
-        //atualizo posiçoes da velha
+
+        bzero(message, strlen(message));
+        recv(fd, message, strlen(message), 0);
+        printf("Mensagem do servidor: %s\n", message);
 	}
+    close(fd);
+	return 0;
 }
