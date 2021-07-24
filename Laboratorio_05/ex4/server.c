@@ -11,16 +11,18 @@
 #include <stdio.h>
 
 int main(){
-    int fd, conn, child_pid, pipe_1[2], pipe_2[2], flag = 1;
-    char message[100] = " "; 
+    int fd, conn, child_pid, pipe_1[2], pipe_2[2], flag = 1, first_msg = 1;
+    char message[100] = " ", buffer_1[3], buffer_2[3]; 
     
     printf("Servidor Iniciado!\n");
-    memset(message, '0',sizeof(message));
+    memset(message, '\0',sizeof(message));
+    memset(buffer_1, '\0',sizeof(buffer_1));
+    memset(buffer_2, '\0',sizeof(buffer_2));
 
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 
     struct sockaddr_in serv; 
-    memset(&serv, '0', sizeof(serv)); 
+    memset(&serv, '\0', sizeof(serv)); 
     
 	serv.sin_family = AF_INET;
 	serv.sin_port = htons(8096); 
@@ -39,18 +41,32 @@ int main(){
 		if ( (child_pid = fork ()) == 0 ){
             if (flag_fork == 1){
                 bzero(message, strlen(message));
+
                 while (recv(conn, message, 100, 0) > 0) {
-                    printf("Mensagem do filho [1]: %s", message);
-                    send(conn, message, strlen(message), 0);
-                    bzero(message, strlen(message));
+                    close(pipe_1[1]);
+                    if (read(pipe_1[0], buffer_1, sizeof(buffer_1)) > 0){
+                        send(conn, buffer_1, strlen(buffer_1), 0);
+                        memset(buffer_1, '\0',sizeof(buffer_1));
+                    }
+
+                    close(pipe_2[0]);
+                    write(pipe_2[1], message, (strlen(message) + 1));
                 }
             }
             else {
                 bzero(message, strlen(message));
+
                 while (recv(conn, message, 100, 0) > 0) {
-                    printf("Mensagem do filho [2]: %s", message);
-                    send(conn, message, strlen(message), 0);
-                    bzero(message, strlen(message));
+                    if (first_msg){first_msg = -1; close(pipe_1[0]); write(pipe_1[1], message, (strlen(message) + 1));}
+
+                    close(pipe_2[1]);
+                    if (read(pipe_2[0], buffer_2, sizeof(buffer_2)) > 0){
+                        send(conn, buffer_2, strlen(buffer_2), 0);
+                        memset(buffer_2, '\0',sizeof(buffer_2));
+                    }
+
+                    close(pipe_1[0]);
+                    write(pipe_1[1], message, (strlen(message) + 1));
                 }
             }
         }

@@ -60,8 +60,8 @@ int main(){
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	
     struct sockaddr_in serv; 
-	memset(&serv, '0', sizeof(serv)); 
-    memset(message, '0',sizeof(message));
+	memset(&serv, '\0', sizeof(serv)); 
+    memset(message, '\0',sizeof(message));
 
     serv.sin_family = AF_INET;
 	serv.sin_port = htons(8096);
@@ -77,6 +77,8 @@ int main(){
 
         recv(fd, message, strlen(message), 0);
         printf("Mensagem do servidor: %s\n", message);
+        memset(message, '\0',sizeof(message));
+        fflush(stdout);
 	}
     close(fd);
 	return 0;
