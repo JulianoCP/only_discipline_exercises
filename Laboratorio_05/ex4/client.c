@@ -8,11 +8,8 @@
 #include <string.h>
 #include <stdlib.h>     
 
-int fd; 
-int conn; 
-char message[100] = ""; 
-char velha[3][3];
-int contador;
+int conn, fd, contador, first_conection = 1; 
+char message[100] = " ", velha[3][3], buffer[3]; 
 
 void inicio_velha () {
     memset(&velha,' ',sizeof(velha)); 
@@ -70,15 +67,30 @@ int main(){
 	connect(fd, (struct sockaddr *)&serv, sizeof(serv));
 
 	while(1) {
-		printf("Enter a message: ");
+        if (first_conection){
+            recv(fd, message, 4, 0);
+            if ((strcmp(message, "Yes") == 0)){
+                printf("Aguardando outro cliente se conectar ao jogo.");
+                recv(fd, message, 4, 0);
+                printf("\nJogador encontrado, e ele sera o primeiro a jogar, aguarde.\n");
+                if ((strcmp(message, "Con") == 0)){
+                    first_conection = -1;
+                    recv(fd, message, 4, 0);
+                    printf("\nPrimeira jogado do oponente: %s \n", message);
+                }
+            }
+            else{
+                first_conection = -1;
+                printf("Já existe um oponente esperando, e você é o primeiro a jogar.\n");
+            }
+        }
+        printf("\nSua jogada: ");
         fgets(message, 100, stdin);
-		send(fd, message, strlen(message), 0);
-        fflush(stdin);
+        send(fd, message, 4, 0);
 
-        recv(fd, message, strlen(message), 0);
-        printf("Mensagem do servidor: %s\n", message);
+        recv(fd, message, 4, 0);
+        printf("\nJogada do oponente: %s", message);
         memset(message, '\0',sizeof(message));
-        fflush(stdout);
 	}
     close(fd);
 	return 0;
