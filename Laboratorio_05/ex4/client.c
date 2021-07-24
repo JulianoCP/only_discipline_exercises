@@ -71,11 +71,10 @@ int main(){
 
 	while(1) {
 		printf("Enter a message: ");
-        bzero(message, strlen(message));
-		fgets(message, 100, stdin);
+        fgets(message, 100, stdin);
 		send(fd, message, strlen(message), 0);
+        fflush(stdin);
 
-        bzero(message, strlen(message));
         recv(fd, message, strlen(message), 0);
         printf("Mensagem do servidor: %s\n", message);
 	}

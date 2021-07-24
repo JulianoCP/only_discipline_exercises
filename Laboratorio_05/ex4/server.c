@@ -10,14 +10,10 @@
 #include <errno.h>
 #include <stdio.h>
 
-int fd; 
-int conn, child_pid, n;
-int pipe_1[2];
-int pipe_2[2];
-char message[100] = ""; 
-int flag = 1;
-
 int main(){
+    int fd, conn, child_pid, pipe_1[2], pipe_2[2], flag = 1;
+    char message[100] = " "; 
+    
     printf("Servidor Iniciado!\n");
     memset(message, '0',sizeof(message));
 
@@ -41,10 +37,10 @@ int main(){
         if(flag == 1){ flag = 0; }
 
 		if ( (child_pid = fork ()) == 0 ){
-            if (flag_fork == 0){
+            if (flag_fork == 1){
                 bzero(message, strlen(message));
                 while (recv(conn, message, 100, 0) > 0) {
-                    printf("Server Received: %s", message);
+                    printf("Mensagem do filho [1]: %s", message);
                     send(conn, message, strlen(message), 0);
                     bzero(message, strlen(message));
                 }
@@ -52,7 +48,7 @@ int main(){
             else {
                 bzero(message, strlen(message));
                 while (recv(conn, message, 100, 0) > 0) {
-                    printf("Server Received: %s", message);
+                    printf("Mensagem do filho [2]: %s", message);
                     send(conn, message, strlen(message), 0);
                     bzero(message, strlen(message));
                 }
