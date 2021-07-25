@@ -10,6 +10,6 @@ Executando:
 - Abra o arquivo ./write_fifo em outro terminal
     Lembre-se de executar o ./write_fifo passando uma string como parametro.
          
-         ./write_fifo "1 + 1"
+       Ex:  ./write_fifo "1 + 1"
 ---------------------------------------------------------------
 
