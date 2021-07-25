@@ -8,8 +8,8 @@
 #include <string.h>
 #include <stdlib.h>     
 
-int conn, fd, contador, first_conection = 1; 
-char message[100] = " ", velha[3][3], buffer[3]; 
+int contador; 
+char velha[3][3]; 
 
 void inicio_velha () {
     memset(&velha,' ',sizeof(velha)); 
@@ -54,6 +54,9 @@ int marca_velha (int l, int c, char sinal) {
 }
 
 int main(){
+    int fd, first_conection = 1;
+    char message[100]; 
+
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	
     struct sockaddr_in serv; 
@@ -67,7 +70,7 @@ int main(){
 	connect(fd, (struct sockaddr *)&serv, sizeof(serv));
 
 	while(1) {
-        if (first_conection){
+        if (first_conection == 1){
             recv(fd, message, 4, 0);
             if ((strcmp(message, "Yes") == 0)){
                 printf("Aguardando outro cliente se conectar ao jogo.");
@@ -90,7 +93,6 @@ int main(){
 
         recv(fd, message, 4, 0);
         printf("\nJogada do oponente: %s", message);
-        memset(message, '\0',sizeof(message));
 	}
     close(fd);
 	return 0;

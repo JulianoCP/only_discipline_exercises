@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 int main(){
-    int fd, conn, child_pid, pipe_1[2], pipe_2[2], flag = 1, flag_first_msg = 1;
+    int fd, conn, child_pid, pipe_1[2], pipe_2[2], flag = 1;
     char message[100] = " ", buffer_1[4], buffer_2[4]; 
     
     printf("Servidor Iniciado!\n");
@@ -41,7 +41,7 @@ int main(){
 		if ( (child_pid = fork ()) == 0 ){
             if (flag_fork == 1){
                 send(conn, "Yes", 4, 0);
-                bzero(message, strlen(message));
+                bzero(message, 4);
 
                 while (!read(pipe_1[0], buffer_1, sizeof(buffer_1))){ }
                 send(conn, "Con", 4, 0);
@@ -50,29 +50,27 @@ int main(){
                 send(conn, buffer_1, sizeof(buffer_1), 1);
 
                 while (recv(conn, message, 100, 0) > 0) {
+                    close(pipe_2[0]);
+                    write(pipe_2[1], message, 4);
+
                     close(pipe_1[1]);
                     read(pipe_1[0], buffer_1, sizeof(buffer_1));
                     send(conn, buffer_1, 4, 0);
-
-                    close(pipe_2[0]);
-                    write(pipe_2[1], message, 4);
                 }
             }
             else {
                 send(conn, "No", 4, 0);
-                bzero(message, strlen(message));
+                bzero(message, 4);
+
                 close(pipe_1[0]);
                 write(pipe_1[1], "Sta", 4);
 
                 while (recv(conn, message, 100, 0) > 0) {
-                    if (flag_first_msg){flag_first_msg = -1;}
-                    else{
-                        close(pipe_2[1]);
-                        read(pipe_2[0], buffer_2, sizeof(buffer_2));
-                        send(conn, buffer_2, 4, 0);
-                    }
                     close(pipe_1[0]);
                     write(pipe_1[1], message, 4);
+
+                    close(pipe_2[1]);
+                    read(pipe_2[0], buffer_2, sizeof(buffer_2));
                     send(conn, buffer_2, 4, 0);
                 }
             }
