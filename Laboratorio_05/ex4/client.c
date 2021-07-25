@@ -54,8 +54,8 @@ int marca_velha (int l, int c, char sinal) {
 }
 
 int main(){
-    int fd, first_conection = 1;
-    char message[100]; 
+    int fd, first_conection = 1, line, col;
+    char message[100], turn = 'X', check; 
 
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	
@@ -68,18 +68,28 @@ int main(){
 
 	inet_pton(AF_INET, "127.0.0.1", &serv.sin_addr); 
 	connect(fd, (struct sockaddr *)&serv, sizeof(serv));
+    printf("Aguardando outro cliente se conectar ao jogo.\n");
+	
+    inicio_velha();
+    desenha_velha();
 
-	while(1) {
+    while(1) {
         if (first_conection == 1){
             recv(fd, message, 4, 0);
             if ((strcmp(message, "Yes") == 0)){
-                printf("Aguardando outro cliente se conectar ao jogo.");
                 recv(fd, message, 4, 0);
-                printf("\nJogador encontrado, e ele sera o primeiro a jogar, aguarde.\n");
+                printf("Jogador encontrado, e ele sera o primeiro a jogar, aguarde.\n");
                 if ((strcmp(message, "Con") == 0)){
                     first_conection = -1;
                     recv(fd, message, 4, 0);
                     printf("\nPrimeira jogado do oponente: %s \n", message);
+
+                    line = atoi(&message[0]); col = atoi(&message[2]); turn = 'O';
+                    if (marca_velha(line, col, turn) != 1){ printf("Jogada do oponente foi um movimento invalido, perdeu a vez."); }
+                    else{ printf("\nJogada do oponente feita com sucesso.\n"); desenha_velha(); }
+
+                    memset(message, '\0',sizeof(message));
+                    fflush(stdout);  
                 }
             }
             else{
@@ -87,12 +97,37 @@ int main(){
                 printf("Já existe um oponente esperando, e você é o primeiro a jogar.\n");
             }
         }
-        printf("\nSua jogada: ");
+        printf("\nFaça uma jogada: ");
         fgets(message, 100, stdin);
+        line = atoi(&message[0]); col = atoi(&message[2]); turn = 'X';
+        if (marca_velha(line, col, turn) != 1){ printf("Movimento invalido, perdeu a vez.");}
+        else{ printf("\nJogada feita com sucesso.\n"); desenha_velha(); }
         send(fd, message, 4, 0);
+
+        memset(message, '\0',sizeof(message));
+        fflush(stdin);
+
+        if ((check = verifica_ganhador()) != ' ') { 
+            if ((check = verifica_ganhador()) == 0) printf("\n-> Os Jogadores empataram. <-\n");
+            else printf("\n->Ganhador é o %c <-\n", check);
+            exit(1);
+        }
 
         recv(fd, message, 4, 0);
         printf("\nJogada do oponente: %s", message);
+        line = atoi(&message[0]); col = atoi(&message[2]); turn = 'O';
+        if (marca_velha(line, col, turn) != 1){ printf("Jogada do oponente foi um movimento invalido, perdeu a vez."); }
+        else{ printf("\nJogada do oponente feita com sucesso.\n"); desenha_velha(); }
+
+        memset(message, '\0',sizeof(message));
+        fflush(stdout);        
+
+        if ((check = verifica_ganhador()) != ' ') { 
+            if ((check = verifica_ganhador()) == 0) printf("\n-> Os Jogadores empataram. <-\n");
+            else printf("\n->Ganhador é o %c <-\n", check);
+            exit(1);
+        }
+
 	}
     close(fd);
 	return 0;
