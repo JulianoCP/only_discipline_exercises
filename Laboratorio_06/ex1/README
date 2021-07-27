@@ -1,0 +1,9 @@
+<>COMO EXECUTAR<>
+
+---------------------------------------------------------------
+Programa: sum_matrix.c
+Compilar: gcc sum_matrix.c -o sum_matrix -lpthread
+Executar: ./sum_matrix <NUMERO_THREADS>
+Exemplo: ./sum_matrix 3
+
+MAKE: make
