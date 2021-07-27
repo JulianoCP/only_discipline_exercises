@@ -1,0 +1,9 @@
+<>COMO EXECUTAR<>
+
+---------------------------------------------------------------
+Programa: ping_pong.c
+Compilar: gcc ping_pong.c -o ping_pong -lpthread
+Executar: ./ping_pong <NUMERO_THREADS_PING> <NUMERO_THREADS_PONG>
+Exemplo: ./ping_pong 2 2 
+
+MAKE: make
