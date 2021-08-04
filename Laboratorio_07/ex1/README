@@ -1,0 +1,8 @@
+<>COMO EXECUTAR<>
+
+---------------------------------------------------------------
+Programa: semaforo.c
+Compilar: gcc  semaforo.c -o semaforo -lpthread
+Executar: ./semaforo
+
+MAKE: make
