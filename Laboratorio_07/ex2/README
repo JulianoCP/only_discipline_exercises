@@ -1,0 +1,8 @@
+<>COMO EXECUTAR<>
+
+---------------------------------------------------------------
+Programa: noel.c
+Compilar: gcc  noel.c -o noel -lpthread
+Executar: ./noel
+
+MAKE: make

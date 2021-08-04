@@ -17,9 +17,7 @@
 #include<unistd.h>
 #include<semaphore.h>
 
-int count_leitor = 0;
-int flag_escritor = 0; 
-
+int count_leitor = 0, flag_escritor = 0; 
 sem_t mutex, acesso_documento;
 
  /*
@@ -88,5 +86,3 @@ int main(){
     
     return 0;
 }
-
-
